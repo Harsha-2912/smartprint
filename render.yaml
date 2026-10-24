@@ -28,12 +28,11 @@ services:
 
   # ========================================================
   # 2. FRONTEND SERVICE: React 19 + Vite Static Site
+  # Static sites are distributed globally via CDN (no region)
   # ========================================================
   - type: web
     name: smartprint-frontend
     runtime: static
-    plan: free
-    region: oregon
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
