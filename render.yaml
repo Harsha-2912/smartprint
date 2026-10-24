@@ -42,6 +42,5 @@ services:
     envVars:
       - key: VITE_ENABLE_MOCK_FALLBACK
         value: "true"
-      # Point this to your backend URL in Render Dashboard (e.g. https://smartprint-backend.onrender.com/api):
       - key: VITE_API_BASE_URL
-        sync: false
+        value: "https://smartprint-backend-8cyj.onrender.com/api"

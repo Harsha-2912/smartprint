@@ -41,6 +41,30 @@ export default function QRCodeUploadCard({ onUploadSuccess }) {
     return () => clearInterval(timer);
   }, [secondsRemaining]);
 
+  // Real-time polling for mobile phone uploads
+  useEffect(() => {
+    if (!sessionData?.sessionToken || sessionStatus !== 'WAITING_FOR_UPLOAD') {
+      return;
+    }
+
+    const pollTimer = setInterval(async () => {
+      try {
+        const res = await documentService.checkQRSessionStatus(sessionData.sessionToken);
+        if (res && res.status === 'FILE_RECEIVED' && res.document) {
+          setSessionStatus('FILE_RECEIVED');
+          setDocument(res.document);
+          setTimeout(() => {
+            if (onUploadSuccess) onUploadSuccess(res.document);
+          }, 1200);
+        }
+      } catch (err) {
+        // Ignore transient network errors during polling
+      }
+    }, 2000);
+
+    return () => clearInterval(pollTimer);
+  }, [sessionData, sessionStatus, onUploadSuccess, setDocument]);
+
   // Demo: Simulate mobile phone upload
   const handleSimulatePhoneUpload = async () => {
     setIsSimulatingPhone(true);

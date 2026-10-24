@@ -101,8 +101,18 @@ def get_qr_session():
     """
     Generates QR sync token for mobile phone wireless upload.
     """
-    host_ip = request.host.split(':')[0]
-    session_data = session_manager.create_qr_session(kiosk_ip=host_ip, port=Config.PORT)
+    proto = request.headers.get('X-Forwarded-Proto', request.scheme)
+    host = request.headers.get('X-Forwarded-Host', request.host)
+
+    # In cloud (Render) or standard proxy environments:
+    if 'onrender.com' in host or proto == 'https':
+        base_url = f"https://{host.split(':')[0]}"
+    elif '127.0.0.1' in host or 'localhost' in host:
+        base_url = f"{request.scheme}://{request.host}"
+    else:
+        base_url = f"{proto}://{host}"
+
+    session_data = session_manager.create_qr_session(base_url=base_url)
     return jsonify({
         'success': True,
         'sessionToken': session_data['token'],

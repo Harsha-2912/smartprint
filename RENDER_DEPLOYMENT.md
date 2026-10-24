@@ -39,9 +39,9 @@ https://github.com/Harsha-2912/smartprint.git
 4. Render will read `render.yaml` and show 2 services:
    - `smartprint-backend` (Web Service)
    - `smartprint-frontend` (Static Site)
-5. During setup, Render will prompt for the two `sync: false` variables:
-   - **`DATABASE_URL`**: Paste your manually created database connection string (or leave empty if you want to add it later).
-   - **`VITE_API_BASE_URL`**: Leave empty initially or set to `https://smartprint-backend.onrender.com/api`.
+5. During setup, Render will prompt for the manual database variable:
+   - **`DATABASE_URL`**: Paste your manually created database connection string (or leave empty if using SQLite/in-memory).
+   - **`VITE_API_BASE_URL`**: Pre-configured to `https://smartprint-backend-8cyj.onrender.com/api` in `render.yaml`.
 6. Click **Apply**.
 
 ---
@@ -60,12 +60,9 @@ Whenever your manual database is ready (e.g. from Render PostgreSQL, Neon, Supab
 
 ---
 
-## 🔗 Linking Frontend to Backend
+## 🔗 Live Backend Verification
 
-1. Once `smartprint-backend` is deployed, copy its live URL (e.g. `https://smartprint-backend.onrender.com`).
-2. Go to **Render Dashboard** > Select **`smartprint-frontend`**.
-3. Click **Environment** > Set:
-   ```text
-   VITE_API_BASE_URL = https://smartprint-backend.onrender.com/api
-   ```
-4. Click **Save Changes** and trigger a manual redeploy.
+Your live backend is deployed and verified at:
+- **Service URL**: `https://smartprint-backend-8cyj.onrender.com`
+- **Health Check**: `https://smartprint-backend-8cyj.onrender.com/api/health`
+- **Printer Telemetry**: `https://smartprint-backend-8cyj.onrender.com/api/printer/status`

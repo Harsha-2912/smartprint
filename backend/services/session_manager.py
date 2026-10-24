@@ -28,12 +28,15 @@ class SessionManager:
         self.documents = {}
         self.qr_sessions = {}
 
-    def create_qr_session(self, kiosk_ip="127.0.0.1", port=5000):
+    def create_qr_session(self, base_url=None, kiosk_ip="127.0.0.1", port=5000):
         """Creates an ephemeral QR token for mobile phone upload."""
         token = f"QR-SYNC-{uuid.uuid4().hex[:6].upper()}"
         expires_at = datetime.datetime.now() + datetime.timedelta(seconds=300)
         
-        mobile_url = f"http://{kiosk_ip}:{port}/mobile-upload?token={token}"
+        if base_url:
+            mobile_url = f"{base_url.rstrip('/')}/mobile-upload?token={token}"
+        else:
+            mobile_url = f"http://{kiosk_ip}:{port}/mobile-upload?token={token}"
         
         session_info = {
             'token': token,
