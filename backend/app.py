@@ -27,6 +27,76 @@ def create_app():
     app.register_blueprint(payment_bp, url_prefix='/api/payments')
     app.register_blueprint(printer_bp, url_prefix='/api/printer')
     app.register_blueprint(job_bp, url_prefix='/api/jobs')
+    @app.route('/', methods=['GET'])
+    def root_dashboard():
+        html = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>SmartPrint AI — Autonomous Xerox Backend</title>
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+            <style>
+                * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+                body { background: #0F172A; color: #F8FAFC; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+                .card { background: #1E293B; border: 1px solid #334155; border-radius: 24px; padding: 2.5rem; max-width: 580px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+                .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); color: #34D399; padding: 6px 14px; border-radius: 9999px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(16, 185, 129, 0.3); }
+                .dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 8px #10B981; animation: pulse 2s infinite; }
+                @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+                h1 { font-size: 1.75rem; font-weight: 800; margin: 1.25rem 0 0.5rem 0; background: linear-gradient(135deg, #60A5FA, #C084FC); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                p { color: #94A3B8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+                .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.75rem; }
+                .info-box { background: #0F172A; border: 1px solid #334155; border-radius: 12px; padding: 12px 14px; }
+                .info-label { font-size: 0.72rem; text-transform: uppercase; color: #64748B; font-weight: 700; letter-spacing: 0.05em; }
+                .info-val { font-size: 0.92rem; font-weight: 600; color: #F1F5F9; margin-top: 2px; }
+                .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #2563EB, #7C3AED); color: white; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 1rem; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 10px 20px rgba(37,99,235,0.3); margin-bottom: 0.75rem; }
+                .btn:hover { opacity: 0.95; transform: translateY(-1px); }
+                .endpoints { border-top: 1px solid #334155; padding-top: 1.25rem; font-size: 0.85rem; color: #64748B; }
+                .endpoint-link { color: #38BDF8; text-decoration: none; margin-right: 12px; }
+                .endpoint-link:hover { text-decoration: underline; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="badge"><span class="dot"></span> SmartPrint AI Engine Active</div>
+                <h1>REST API Backend Online</h1>
+                <p>Autonomous Xerox & Printing kiosk backend running on Render with OpenCV computer vision and hardware diagnostics.</p>
+                
+                <div class="grid">
+                    <div class="info-box">
+                        <div class="info-label">Version</div>
+                        <div class="info-val">v2.4.0 Production</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Kiosk ID</div>
+                        <div class="info-val">""" + Config.KIOSK_ID + """</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Printer Model</div>
+                        <div class="info-val">AltaLink® C8170 Pro</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-label">Speed & DPI</div>
+                        <div class="info-val">70 PPM • 2400 DPI</div>
+                    </div>
+                </div>
+
+                <a href="https://smartprint-frontend.onrender.com" class="btn">
+                    🚀 Launch Kiosk Frontend Application ➔
+                </a>
+
+                <div class="endpoints">
+                    <strong>Live API Endpoints:</strong><br>
+                    <a href="/api/health" class="endpoint-link">/api/health</a>
+                    <a href="/api/printer/status" class="endpoint-link">/api/printer/status</a>
+                    <a href="/api/documents/qr-session" class="endpoint-link">/api/documents/qr-session</a>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        return render_template_string(html)
 
     @app.route('/api/health', methods=['GET'])
     def health_check():
