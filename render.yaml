@@ -1,8 +1,11 @@
-# Render Blueprint Specification for SmartPrint AI Kiosk
-# Documentation: https://render.com/docs/blueprint-spec
+# Render Blueprint Specification for SmartPrint AI (Frontend + Backend ONLY)
+# Database is omitted so you can attach your own manually created database.
+# Docs: https://render.com/docs/blueprint-spec
 
 services:
-  # 1. Python Flask Autonomous Backend
+  # ========================================================
+  # 1. BACKEND SERVICE: Python Flask REST API Engine
+  # ========================================================
   - type: web
     name: smartprint-backend
     runtime: python
@@ -19,8 +22,13 @@ services:
         value: 0.0.0.0
       - key: KIOSK_ID
         value: KIOSK-CLOUD-01
+      # Connect your manual database by setting this in Render Dashboard:
+      - key: DATABASE_URL
+        sync: false
 
-  # 2. React 19 Frontend Kiosk Interface
+  # ========================================================
+  # 2. FRONTEND SERVICE: React 19 + Vite Static Site
+  # ========================================================
   - type: web
     name: smartprint-frontend
     runtime: static
@@ -35,4 +43,6 @@ services:
     envVars:
       - key: VITE_ENABLE_MOCK_FALLBACK
         value: "true"
-      # Set VITE_API_BASE_URL to your backend's URL + /api (e.g. https://smartprint-backend.onrender.com/api)
+      # Point this to your backend URL in Render Dashboard (e.g. https://smartprint-backend.onrender.com/api):
+      - key: VITE_API_BASE_URL
+        sync: false

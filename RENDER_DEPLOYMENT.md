@@ -1,93 +1,71 @@
-# Render Deployment Blueprint & Guide — SmartPrint AI
+# Render Deployment Blueprint (Frontend + Backend Only)
 
-This guide explains how to deploy **SmartPrint AI Autonomous Xerox Machine** on **[Render](https://render.com)** using the included `render.yaml` blueprint or manual dashboard setup.
-
----
-
-## Architecture on Render
-
-Render hosts the system as two complementary microservices:
-
-1. **`smartprint-backend` (Web Service - Python)**:
-   - Serves document uploads, OpenCV document pre-flight analysis, page previews, and UPI payments.
-   - Run Command: `gunicorn --chdir backend wsgi:app --bind 0.0.0.0:$PORT`
-2. **`smartprint-frontend` (Static Site - React 19 + Vite)**:
-   - Serves the touchscreen UI, preview workspace, pricing configurator, and printer visualizer.
-   - Build Command: `npm install && npm run build`
-   - Publish Directory: `dist`
+This blueprint configures **only the Frontend and Backend** on [Render](https://render.com). No managed database will be automatically created or billed by Render — you can connect your own manually created database (PostgreSQL, MySQL, Supabase, Neon, etc.).
 
 ---
 
-## Method 1: Deploy with Render Blueprint (Recommended)
+## 🏗️ Services Architecture
 
-1. **Log in to [Render](https://dashboard.render.com/)**.
-2. Click **New +** in the top navigation bar and select **Blueprint**.
-3. Connect your GitHub account and select your repository:
-   ```text
-   Harsha-2912/smartprint
-   ```
-4. Render will automatically detect `render.yaml` and configure:
-   - `smartprint-backend` (Python Web Service)
+```mermaid
+graph LR
+    subgraph Render Platform
+        Frontend["smartprint-frontend (Static Site)"] -->|REST API| Backend["smartprint-backend (Python Web Service)"]
+    end
+    Backend -.->|DATABASE_URL| ExternalDB["Your Manually Created Database (PostgreSQL / MySQL)"]
+```
+
+1. **`smartprint-backend` (Web Service)**:
+   - Python 3.11 + Gunicorn + Flask + OpenCV + PyPDF
+   - Runs on Render Free Tier
+   - Accepts manual `DATABASE_URL` via environment variable
+2. **`smartprint-frontend` (Static Site)**:
+   - React 19 + Vite + MUI + Bootstrap
+   - Free static site hosting with client-side SPA routing (`/* -> /index.html`)
+
+---
+
+## 🚀 How to Deploy on Render
+
+### Step 1: Push Blueprint to GitHub
+The `render.yaml` file is already committed and pushed to your repository:
+```text
+https://github.com/Harsha-2912/smartprint.git
+```
+
+### Step 2: Launch via Render Blueprint
+1. Open your **[Render Dashboard](https://dashboard.render.com/)**.
+2. Click **New +** > **Blueprint**.
+3. Select your repository: `Harsha-2912/smartprint`.
+4. Render will read `render.yaml` and show 2 services:
+   - `smartprint-backend` (Web Service)
    - `smartprint-frontend` (Static Site)
-5. Click **Apply**. Render will start building both services.
-6. Once `smartprint-backend` is deployed, copy its URL (e.g. `https://smartprint-backend.onrender.com`).
-7. In `smartprint-frontend` settings, go to **Environment Variables**, set:
+5. During setup, Render will prompt for the two `sync: false` variables:
+   - **`DATABASE_URL`**: Paste your manually created database connection string (or leave empty if you want to add it later).
+   - **`VITE_API_BASE_URL`**: Leave empty initially or set to `https://smartprint-backend.onrender.com/api`.
+6. Click **Apply**.
+
+---
+
+## 🗄️ Connecting Your Manual Database
+
+Whenever your manual database is ready (e.g. from Render PostgreSQL, Neon, Supabase, or AWS RDS):
+
+1. Go to **Render Dashboard** > Select **`smartprint-backend`**.
+2. Click **Environment**.
+3. Add or edit the `DATABASE_URL` variable:
+   ```text
+   DATABASE_URL = postgresql://username:password@hostname:5432/dbname
+   ```
+4. Click **Save Changes**. The backend will automatically restart and pick up your manual database connection.
+
+---
+
+## 🔗 Linking Frontend to Backend
+
+1. Once `smartprint-backend` is deployed, copy its live URL (e.g. `https://smartprint-backend.onrender.com`).
+2. Go to **Render Dashboard** > Select **`smartprint-frontend`**.
+3. Click **Environment** > Set:
    ```text
    VITE_API_BASE_URL = https://smartprint-backend.onrender.com/api
    ```
-8. Click **Save Changes** and trigger a re-deploy of the frontend.
-
----
-
-## Method 2: Manual Dashboard Setup
-
-If you prefer setting up the services manually via the Render Web UI:
-
-### Step A: Deploy Backend Web Service
-1. In Render Dashboard, click **New + > Web Service**.
-2. Select repository: `Harsha-2912/smartprint`.
-3. Configure the following fields:
-   - **Name**: `smartprint-backend`
-   - **Region**: Oregon (or nearest to your audience)
-   - **Branch**: `main`
-   - **Root Directory**: Leave blank (root)
-   - **Runtime**: `Python 3`
-   - **Build Command**: `pip install -r backend/requirements.txt`
-   - **Start Command**: `gunicorn --chdir backend wsgi:app --bind 0.0.0.0:$PORT`
-   - **Plan**: `Free`
-4. Under **Environment Variables**, add:
-   - `PYTHON_VERSION`: `3.11.9`
-   - `FLASK_DEBUG`: `False`
-   - `HOST`: `0.0.0.0`
-5. Click **Create Web Service**. Wait for the status to show **Live**.
-6. Copy your live backend URL (e.g. `https://smartprint-backend.onrender.com`).
-
----
-
-### Step B: Deploy Frontend Static Site
-1. In Render Dashboard, click **New + > Static Site**.
-2. Select repository: `Harsha-2912/smartprint`.
-3. Configure:
-   - **Name**: `smartprint-frontend`
-   - **Branch**: `main`
-   - **Root Directory**: Leave blank (root)
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist`
-4. Under **Redirects/Rewrites**:
-   - **Type**: `Rewrite`
-   - **Source**: `/*`
-   - **Destination**: `/index.html`
-5. Under **Environment Variables**, add:
-   - `VITE_API_BASE_URL`: `https://smartprint-backend.onrender.com/api` (use your actual backend URL from Step A)
-   - `VITE_ENABLE_MOCK_FALLBACK`: `true`
-6. Click **Create Static Site**.
-
----
-
-## Verification Checklist
-
-Once deployed:
-1. Open your live frontend URL (e.g. `https://smartprint-frontend.onrender.com`).
-2. Test uploading a PDF or test sample — verify that OpenCV pre-flight checks run and page preview images load.
-3. Test UPI Checkout and simulated payment settlement.
-4. Test hardware diagnostics modal and help guides.
+4. Click **Save Changes** and trigger a manual redeploy.

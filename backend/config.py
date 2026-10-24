@@ -13,7 +13,11 @@ class Config:
     MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # 25 MB
     ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
     
+    # Database Connection (for manually configured PostgreSQL / MySQL on Render)
+    DATABASE_URL = os.environ.get('DATABASE_URL', '')
+
     # Kiosk Identity
+
     KIOSK_ID = os.environ.get('KIOSK_ID', 'KIOSK-BLR-04')
     TERMINAL_NAME = 'SmartPrint AI Self-Service Station #4'
     FACILITY = 'Innovation Tech Hub & Library'
