@@ -1,0 +1,127 @@
+/* Keyframe Animations for SmartPrint AI Kiosk */
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+  }
+}
+
+@keyframes pulseSuccess {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes laserScan {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+@keyframes paperFeed {
+  0% {
+    transform: translateY(-80px) scale(0.92);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-20px) scale(0.96);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(20px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(70px) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes printerVibrate {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-0.8px, 0.5px);
+  }
+  50% {
+    transform: translate(0.8px, -0.5px);
+  }
+  75% {
+    transform: translate(-0.5px, -0.8px);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rotateSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Helper animation classes */
+.anim-pulse-glow {
+  animation: pulseGlow 2s infinite;
+}
+
+.anim-pulse-success {
+  animation: pulseSuccess 2s infinite;
+}
+
+.anim-laser-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #06B6D4, #2563EB, transparent);
+  box-shadow: 0 0 12px #06B6D4, 0 0 20px #2563EB;
+  animation: laserScan 2.4s ease-in-out infinite;
+  z-index: 10;
+}
+
+.anim-float {
+  animation: floatGentle 3s ease-in-out infinite;
+}
+
+.anim-vibrate {
+  animation: printerVibrate 0.15s ease-in-out infinite;
+}
+
+.anim-rotate-slow {
+  animation: rotateSlow 18s linear infinite;
+}

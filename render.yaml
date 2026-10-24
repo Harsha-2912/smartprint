@@ -1,0 +1,38 @@
+# Render Blueprint Specification for SmartPrint AI Kiosk
+# Documentation: https://render.com/docs/blueprint-spec
+
+services:
+  # 1. Python Flask Autonomous Backend
+  - type: web
+    name: smartprint-backend
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn --chdir backend wsgi:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: HOST
+        value: 0.0.0.0
+      - key: KIOSK_ID
+        value: KIOSK-CLOUD-01
+
+  # 2. React 19 Frontend Kiosk Interface
+  - type: web
+    name: smartprint-frontend
+    runtime: static
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_ENABLE_MOCK_FALLBACK
+        value: "true"
+      # Set VITE_API_BASE_URL to your backend's URL + /api (e.g. https://smartprint-backend.onrender.com/api)
